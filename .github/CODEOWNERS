@@ -1,0 +1,19 @@
+# CODEOWNERS
+# Each line is a file pattern followed by one or more owners.
+# Owners are automatically requested for review when someone opens a PR
+# that modifies the matched files.
+#
+# Syntax: <pattern> <owner> [<owner>...]
+# Examples:
+#   *                   @org/team         # all files → whole team
+#   /docs/              @org/docs-team    # docs folder
+#   *.yml               @org/devops       # all YAML files
+
+# Default owner for everything
+# * @your-org/maintainers
+
+# CI/CD and GitHub config
+# .github/ @your-org/devops
+
+# Documentation
+# /docs/ @your-org/docs-team
