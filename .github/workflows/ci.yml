@@ -35,7 +35,7 @@ jobs:
 
       # ── Install dependencies ───────────────────────────
       - name: Install dependencies
-        run: echo "Replace with: npm ci / pip install / go mod download / ..."
+        run: echo "Replace with -> npm ci / pip install / go mod download / ..."
 
       # ── Lint ───────────────────────────────────────────
       - name: Lint
