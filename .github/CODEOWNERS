@@ -1,19 +1,17 @@
 # CODEOWNERS
-# Each line is a file pattern followed by one or more owners.
-# Owners are automatically requested for review when someone opens a PR
-# that modifies the matched files.
+# Owners are automatically requested for review when a PR modifies matched files.
+# Last matching rule takes precedence.
 #
-# Syntax: <pattern> <owner> [<owner>...]
-# Examples:
-#   *                   @org/team         # all files → whole team
-#   /docs/              @org/docs-team    # docs folder
-#   *.yml               @org/devops       # all YAML files
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-# Default owner for everything
+# ── Default: all files ───────────────────────────────────
 # * @your-org/maintainers
 
-# CI/CD and GitHub config
+# ── CI/CD and GitHub config ──────────────────────────────
 # .github/ @your-org/devops
 
-# Documentation
+# ── Documentation ────────────────────────────────────────
 # /docs/ @your-org/docs-team
+
+# ── Security-sensitive paths ─────────────────────────────
+# /src/auth/ @your-org/security-team

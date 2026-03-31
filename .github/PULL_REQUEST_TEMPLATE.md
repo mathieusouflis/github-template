@@ -25,16 +25,15 @@ Closes #<!-- issue number -->
 
 <!-- How did you verify this works? What test cases were added or updated? -->
 
-- [ ] Added / updated unit tests
+- [ ] Added / updated tests
 - [ ] Manually tested locally
-- [ ] All existing tests pass (`pnpm test`)
+- [ ] All existing tests pass
 
 ## Checklist
 
-- [ ] `pnpm lint` passes
-- [ ] `pnpm check-types` passes
-- [ ] `pnpm test` passes
-- [ ] `pnpm build` passes
+- [ ] Lint passes
+- [ ] Tests pass
+- [ ] Build succeeds
 - [ ] Documentation updated if applicable
 
 ## Screenshots
