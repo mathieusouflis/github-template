@@ -36,57 +36,35 @@ Describe the problem this project solves, its main features, and any key design 
 
 ## Getting Started
 
-### Prerequisites
-
-<!-- List the tools and versions required to run this project. -->
-
-| Tool | Version | Install |
-|------|---------|---------|
-| <!-- e.g. Node, Python, Go, Java --> | <!-- e.g. >= 22.x --> | <!-- link --> |
-
-### Installation
-
 ```bash
 git clone https://github.com/your-org/your-repo.git
 cd your-repo
-
-# Activate the commit-msg hook (optional but recommended)
-git config core.hooksPath .githooks
-
-# Copy and fill in environment variables
-cp .env.example .env
-
-# Install dependencies (replace with your package manager)
-# e.g. npm install / pip install -r requirements.txt / go mod download
+git config core.hooksPath .githooks   # activate the Git hooks — optional but recommended
+cp .env.example .env                   # then fill in the values
 ```
 
-See [docs/getting-started](docs/getting-started/README.md) for the full setup guide.
-
----
-
-## Development
-
-```bash
-# Start development server
-# Run tests
-# Lint / format
-# Build for production
-```
-
-<!-- Replace the comments above with your project's actual commands. -->
+Full setup guide (prerequisites, dependency install, dev server): [docs/product-code/tutorials/getting-started](docs/product-code/tutorials/getting-started.md).
 
 ---
 
 ## Architecture
 
-Brief description of the high-level structure. Link to detailed docs if available.
+<!-- Once this project has a real shape, replace the pointer below with a one-paragraph summary and keep the link for detail. -->
+
+See [docs/product-code/concept/todo_architecture-overview](docs/product-code/concept/todo_architecture-overview.md) — template placeholder, not yet filled in.
 
 ```
 .
 ├── src/           # Source code
-├── docs/          # Documentation
+├── docs/          # Documentation — organized by domain × type, see docs/README.md
 └── .github/       # GitHub configuration
 ```
+
+---
+
+## Documentation
+
+All project documentation lives in [`docs/`](docs/README.md), organized by domain (what it's about) × type (what shape it takes). Start there for anything beyond this quickstart — architecture, environment variables, coding conventions, CI/CD, decisions, and more.
 
 ---
 
