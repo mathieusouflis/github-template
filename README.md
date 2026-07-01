@@ -21,8 +21,8 @@ One-paragraph description of what this project does and who it is for.
 
 - [Overview](#overview)
 - [Getting Started](#getting-started)
-- [Development](#development)
 - [Architecture](#architecture)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
 
