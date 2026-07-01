@@ -28,7 +28,7 @@ Commit messages are validated against Conventional Commits **twice**, both reusi
 - **Locally**, if the contributor activated the hook (`git config core.hooksPath .githooks`) — fast feedback, but optional and easy to skip.
 - **In CI**, on every pull request — the `commitlint.yml` workflow re-runs the same script against every commit in the PR, so a contributor who never activated the local hook is still caught before merge.
 
-See [team-process/reference/commit-conventions](../../team-process/reference/commit-conventions.md) for the rule itself.
+See [Commit Conventions](../../../CONTRIBUTING.md#commit-conventions) for the rule itself.
 
 ## Release — `.github/workflows/release.yml`
 
@@ -40,6 +40,6 @@ Two ecosystems are always active regardless of language: `github-actions` (workf
 
 ## See also
 
-- [team-process/reference/commit-conventions](../../team-process/reference/commit-conventions.md)
+- [Commit Conventions](../../../CONTRIBUTING.md#commit-conventions)
 - [team-process/how-to/activate-git-hooks](../../team-process/how-to/activate-git-hooks.md)
 - [operations/runbooks](../runbooks/)

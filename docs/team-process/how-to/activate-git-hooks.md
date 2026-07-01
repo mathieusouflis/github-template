@@ -23,7 +23,7 @@ This repo ships two shell-based hooks under `.githooks/` — no runtime or depen
 
 | Hook | Runs on | Purpose |
 |---|---|---|
-| `commit-msg` | every `git commit` | Rejects commit messages that don't follow [Conventional Commits](../reference/commit-conventions.md) |
+| `commit-msg` | every `git commit` | Rejects commit messages that don't follow [Conventional Commits](../../../CONTRIBUTING.md#commit-conventions) |
 | `pre-push` | every `git push` | Placeholder — uncomment the test/build checks inside `.githooks/pre-push` to run them before every push |
 
 ## Why this is optional but recommended
@@ -32,5 +32,5 @@ Activating the hook is not required to contribute — `commit-msg` validation al
 
 ## See also
 
-- [team-process/reference/commit-conventions](../reference/commit-conventions.md)
+- [Commit Conventions](../../../CONTRIBUTING.md#commit-conventions)
 - [operations/concept/ci-cd-pipeline](../../operations/concept/ci-cd-pipeline.md)
