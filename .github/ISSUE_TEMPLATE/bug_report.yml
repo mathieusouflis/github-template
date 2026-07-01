@@ -43,21 +43,6 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: area
-    attributes:
-      label: Area
-      options:
-        - Frontend / UI
-        - Backend / API
-        - Database
-        - Authentication
-        - CI/CD
-        - Documentation
-        - Other
-    validations:
-      required: true
-
   - type: textarea
     id: environment
     attributes:
@@ -65,8 +50,8 @@ body:
       description: Your runtime versions.
       placeholder: |
         - OS: macOS 15 / Ubuntu 24.04 / Windows 11
-        - Node: 22.x
-        - pnpm: 10.x
+        - Runtime: Node 22.x / Python 3.12 / Go 1.22 / etc.
+        - Package manager / build tool version (if applicable)
         - Browser (if applicable): Chrome 134
     validations:
       required: true
