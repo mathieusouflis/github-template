@@ -30,21 +30,6 @@ body:
       label: Alternatives considered
       description: What other approaches did you consider? Why did you reject them?
 
-  - type: dropdown
-    id: area
-    attributes:
-      label: Area
-      options:
-        - Frontend / UI
-        - Backend / API
-        - Database
-        - Authentication
-        - Developer experience
-        - Documentation
-        - Other
-    validations:
-      required: true
-
   - type: textarea
     id: context
     attributes:
