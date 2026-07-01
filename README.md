@@ -5,9 +5,9 @@
 <!--
 One-time repo settings (not controlled by files in this template):
 - Enable GitHub Discussions under Settings → General → Features.
-  CONTRIBUTING.md, SUPPORT.md, the FAQ, and the issue template config
-  all link to Discussions as the place to ask questions; those links
-  404 until this is turned on.
+  CONTRIBUTING.md, SUPPORT.md, and the issue template config all link
+  to Discussions as the place to ask questions; those links 404 until
+  this is turned on.
 -->
 
 [![CI](https://github.com/your-org/your-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/your-repo/actions/workflows/ci.yml)
