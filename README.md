@@ -2,6 +2,14 @@
 
 <!-- Replace the title above, fill in each section, and delete these comments when done. -->
 
+<!--
+One-time repo settings (not controlled by files in this template):
+- Enable GitHub Discussions under Settings → General → Features.
+  CONTRIBUTING.md, SUPPORT.md, the FAQ, and the issue template config
+  all link to Discussions as the place to ask questions; those links
+  404 until this is turned on.
+-->
+
 [![CI](https://github.com/your-org/your-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/your-repo/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
