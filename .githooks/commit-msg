@@ -17,7 +17,7 @@ if ! echo "$SUBJECT" | grep -qE "$PATTERN"; then
   echo "  Example: feat(auth): add refresh token rotation"
   echo ""
   echo "  Allowed types: feat | fix | refactor | test | docs | chore | perf | ci"
-  echo "  Subject must be lowercase and under 72 characters."
+  echo "  Description must be under 72 characters."
   echo ""
   echo "  Your message: $SUBJECT"
   echo ""
