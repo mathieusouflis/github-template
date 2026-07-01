@@ -60,7 +60,7 @@ This guide walks you through setting up the project locally for development.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `PORT`   | No       | `3000`  | Port the server listens on |
+| `PORT`   | No       | `3000`  | Port the server listens on (only if this project runs a network service; remove otherwise) |
 | <!-- add rows --> | | | |
 
 ---
