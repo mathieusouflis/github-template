@@ -21,15 +21,17 @@ Open a [Feature Request issue](../../../issues/new/choose) first to discuss the 
 
 **Q: Tests are failing locally but passing in CI (or vice versa).**
 - Make sure your `.env` matches the values expected by the test suite
-- Run `pnpm install --frozen-lockfile` to ensure your dependencies match the lockfile
+- Reinstall dependencies from the lockfile to rule out a local drift
+  <!-- e.g. npm ci / pip install -r requirements.txt --no-deps / go mod tidy -->
 
 **Q: How do I run a single test file?**
 ```bash
-pnpm vitest run path/to/your.test.ts
+# Replace with your test runner's single-file invocation
+# e.g. npm test -- path/to/file.test.ts / pytest path/to/test_file.py / go test ./path/...
 ```
 
-**Q: The build fails with type errors I didn't introduce.**
-Pull the latest `main` and run `pnpm install` — a dependency may have been updated.
+**Q: The build fails with errors I didn't introduce.**
+Pull the latest `main` and reinstall dependencies — one may have been updated since you last built.
 
 ---
 
