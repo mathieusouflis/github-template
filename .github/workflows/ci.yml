@@ -74,3 +74,23 @@ jobs:
 
       - name: Build
         run: echo "Replace with your build command"
+
+  # ── Always applicable, regardless of language ──────────────────────────
+  # Backstop for the pre-push hook check: catches contributors who never
+  # activated .githooks. Independent of the placeholder jobs above so it
+  # keeps working after you replace lint/test/build with real steps.
+  docs-todo-check:
+    name: Documentation TODOs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: List remaining template placeholders
+        run: |
+          TODO_DOCS=$(find docs -name 'todo_*.md' 2>/dev/null || true)
+          if [ -n "$TODO_DOCS" ]; then
+            echo "$TODO_DOCS" | while read -r f; do
+              echo "::warning file=$f::Template placeholder not yet filled in — see docs/README.md"
+            done
+          fi
+          exit 0
