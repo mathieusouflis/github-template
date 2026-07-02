@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+# mat — this repo's mini CLI. Plain, dependency-free bash: must run standalone
+# before Nix/direnv/devenv exist, since `mat setup` is what installs them.
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
+
+##### OUTPUT HELPERS #####
+info() { echo "-> $*"; }
+ok() { echo "   $*"; }
+warn() { echo "!! $*" >&2; }
+
+confirm() {
+  local prompt="$1"
+  local reply
+  read -rp "$prompt [y/N] " reply
+  [[ "$reply" =~ ^[Yy]$ ]]
+}
+
+##### OS DETECTION #####
+detect_os() {
+  case "$(uname -s)" in
+    Darwin*) echo "macos" ;;
+    Linux*)
+      if grep -qi microsoft /proc/version 2>/dev/null; then
+        echo "wsl2"
+      else
+        echo "linux"
+      fi
+      ;;
+    *) echo "unsupported" ;;
+  esac
+}
+
+##### NIX #####
+ensure_nix() {
+  if command -v nix >/dev/null 2>&1; then
+    ok "Nix already installed."
+    return 0
+  fi
+
+  warn "Nix is not installed. It's required for the reproducible dev shell (direnv + devenv)."
+  if ! confirm "Install Nix now via the Determinate Systems installer?"; then
+    warn "Skipping Nix. Git hooks and .env will still be set up below, but the dev shell (mat/terraform/etc.) won't be available until you install Nix and re-run 'mat setup'."
+    return 1
+  fi
+
+  info "Installing Nix (this will prompt for your password)..."
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+  warn "Nix installed. Open a new terminal (or source your shell profile) so the 'nix' command is on PATH, then re-run 'mat setup'."
+  return 1
+}
+
+##### DIRENV #####
+ensure_direnv() {
+  if command -v direnv >/dev/null 2>&1; then
+    ok "direnv already installed."
+  else
+    if ! confirm "direnv is not installed. Install it now via 'nix profile install nixpkgs#direnv'?"; then
+      warn "Skipping direnv install."
+      return 1
+    fi
+    nix profile install nixpkgs#direnv
+  fi
+
+  local hook_line="eval \"\$(direnv hook $(basename "${SHELL:-bash}"))\""
+  local rc_file="$HOME/.$(basename "${SHELL:-bash}")rc"
+  if [ -f "$rc_file" ] && grep -qF "direnv hook" "$rc_file"; then
+    ok "direnv shell hook already present in $rc_file."
+  else
+    warn "direnv's shell hook isn't in $rc_file yet. Add this line to it, then restart your shell:"
+    echo "     $hook_line"
+  fi
+}
+
+##### DEVENV #####
+ensure_devenv() {
+  if command -v devenv >/dev/null 2>&1; then
+    ok "devenv already installed."
+    return 0
+  fi
+  if ! confirm "devenv is not installed. Install it now via 'nix profile install nixpkgs#devenv'?"; then
+    warn "Skipping devenv install."
+    return 1
+  fi
+  nix profile install nixpkgs#devenv --accept-flake-config
+}
+
+##### GIT HOOKS #####
+activate_git_hooks() {
+  if [ "$(git config --local --get core.hooksPath || true)" = ".githooks" ]; then
+    ok "Git hooks already activated."
+  else
+    git config core.hooksPath .githooks
+    ok "Activated Git hooks (core.hooksPath = .githooks)."
+  fi
+}
+
+##### ENV FILE #####
+create_env_file() {
+  if [ -f .env ]; then
+    ok ".env already exists, leaving it alone."
+  else
+    cp .env.example .env
+    ok "Created .env from .env.example — fill in the values before running the project."
+  fi
+}
+
+##### SETUP #####
+cmd_setup() {
+  local os
+  os="$(detect_os)"
+  if [ "$os" = "unsupported" ]; then
+    warn "Unrecognized OS. Nix/devenv support macOS and Linux (including WSL2) — on native Windows, install WSL2 first and run 'mat setup' from inside it."
+  fi
+
+  info "Git hooks and .env (no Nix required for these)"
+  activate_git_hooks
+  create_env_file
+
+  echo
+  info "Dev shell (Nix + direnv + devenv)"
+  if ensure_nix; then
+    ensure_direnv || true
+    ensure_devenv || true
+    if command -v direnv >/dev/null 2>&1; then
+      direnv allow "$REPO_ROOT"
+      ok "Ran 'direnv allow' — cd out and back into this directory to enter the dev shell."
+    fi
+  fi
+
+  echo
+  info "Setup complete. Full guide: docs/product-code/tutorials/getting-started.md"
+}
+
+##### DISPATCH #####
+usage() {
+  cat <<'EOF'
+Usage: mat <command>
+
+Commands:
+  setup    Full local onboarding: Nix, direnv, devenv, Git hooks, .env
+EOF
+}
+
+case "${1:-}" in
+  setup) cmd_setup ;;
+  help | --help | -h | "") usage ;;
+  *)
+    warn "Unknown command: $1"
+    usage
+    exit 1
+    ;;
+esac
