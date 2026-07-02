@@ -1,8 +1,8 @@
 # Repository configuration (Terraform)
 
 Manages this repository's GitHub settings as code: merge/auto-merge behavior,
-delete-branch-on-merge, secret scanning, branch protection on `main`, a
-placeholder deployment environment, and the collaborator list. Uses the
+delete-branch-on-merge, secret scanning, branch protection on `main`, the
+`production`/`staging` deployment environments, and the collaborator list. Uses the
 [`integrations/github`](https://registry.terraform.io/providers/integrations/github/latest/docs)
 provider.
 
@@ -55,9 +55,9 @@ it first would try to *create* it and fail. Run this once, before the first
 ```
 
 Nothing else needs importing: `main` currently has no branch protection
-rule, there are no manually-added collaborators, and no `production`
-environment exists yet — all three start as clean creates that match the
-empty/absent live state.
+rule, there are no manually-added collaborators, and neither the
+`production` nor `staging` environment exists yet — all these start as
+clean creates that match the empty/absent live state.
 
 ## What's intentionally not managed here
 

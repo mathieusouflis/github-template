@@ -17,7 +17,7 @@ Using the [`integrations/github`](https://registry.terraform.io/providers/integr
 |---|---|
 | `module.github_repository.github_repository.this` | Merge methods (squash + rebase only, no merge commits), auto-merge disabled, delete-branch-on-merge, secret scanning + push protection |
 | `module.github_repository.github_branch_protection.main` | Require a pull request and passing CI (`lint`, `test`, `build`) before merging into `main`; block direct pushes and force-pushes/deletion |
-| `module.github_repository.github_repository_environment.production` | Placeholder deployment environment — no real deployment target exists yet |
+| `module.github_repository.github_repository_environment.production`, `...staging` | The two fixed deployment environments every repo this module manages gets |
 | `module.github_repository.github_repository_collaborators.this` | The full, authoritative collaborator list (empty by default) |
 
 Solo-maintainer defaults were chosen deliberately: `main` requires a pull request but no minimum approval count, since GitHub can't let a lone maintainer approve their own PR, and branch admins aren't blanket-enforced so an emergency bypass stays possible.

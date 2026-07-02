@@ -88,10 +88,16 @@ resource "github_branch_protection" "main" {
 
 ##### ENVIRONMENTS #####
 #
-# Placeholder — this template has no deployment target yet. Rename/adapt
-# once a real environment exists to protect.
+# Fixed set — every repo this module manages gets exactly "production" and
+# "staging", named to match GitHub Actions environment-scoped secrets/vars
+# and any workflow that deploys with `environment: production`/`staging`.
 resource "github_repository_environment" "production" {
   environment = "production"
+  repository  = github_repository.this.name
+}
+
+resource "github_repository_environment" "staging" {
+  environment = "staging"
   repository  = github_repository.this.name
 }
 
