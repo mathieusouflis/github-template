@@ -11,13 +11,14 @@ This repo ships two shell-based hooks under `.githooks/` — no runtime or depen
 
 ## Steps
 
-1. From the repository root, run:
+Running `./setup-project.sh` from the repository root does this for you, along
+with the rest of local project setup. To activate just the hooks by hand:
 
-   ```bash
-   git config core.hooksPath .githooks
-   ```
+```bash
+git config core.hooksPath .githooks
+```
 
-2. That's it — this is a one-time, per-clone setting stored in your local Git config, not committed to the repo.
+That's it — this is a one-time, per-clone setting stored in your local Git config, not committed to the repo.
 
 ## What each hook does
 

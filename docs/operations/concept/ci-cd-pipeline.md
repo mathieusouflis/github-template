@@ -43,3 +43,4 @@ Two ecosystems are always active regardless of language: `github-actions` (workf
 - [Commit Conventions](../../../CONTRIBUTING.md#commit-conventions)
 - [team-process/how-to/activate-git-hooks](../../team-process/how-to/activate-git-hooks.md)
 - [operations/runbooks](../runbooks/)
+- [Repository configuration](repository-configuration.md) — branch protection requires the `lint`/`test`/`build` checks defined here

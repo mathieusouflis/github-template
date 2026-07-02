@@ -5,7 +5,7 @@ Organized by two axes: **domain** (what this document is about) and **type** (wh
 | Type → <br> Domain ↓ | Concept | How-to | Reference | Decisions | Tutorials | Runbooks |
 |---|---|---|---|---|---|---|
 | **[product-code](product-code/)** | [Architecture overview](product-code/concept/todo_architecture-overview.md) 🚧 | — | [Code style](product-code/reference/code-style.md), [Environment variables](product-code/reference/environment-variables.md) | [First decision](product-code/decisions/todo_first-architecture-decision.md) 🚧 | [Getting started](product-code/tutorials/getting-started.md) | — |
-| **[operations](operations/)** | [CI/CD pipeline](operations/concept/ci-cd-pipeline.md) | — | — | — | — | [Deployment](operations/runbooks/todo_deployment-runbook.md) 🚧 |
+| **[operations](operations/)** | [CI/CD pipeline](operations/concept/ci-cd-pipeline.md), [Repository configuration](operations/concept/repository-configuration.md) | — | — | — | — | [Deployment](operations/runbooks/todo_deployment-runbook.md) 🚧 |
 | **[team-process](team-process/)** | — | [Activate Git hooks](team-process/how-to/activate-git-hooks.md) | [Commit conventions & PR process](../CONTRIBUTING.md) ⧉ | — | — | — |
 | **[organizational](organizational/)** | [Role charter](organizational/concept/todo_role-charter.md) 🚧 | — | [Tool inventory](organizational/reference/todo_tool-inventory.md) 🚧, [Code owners](../.github/CODEOWNERS) ⧉ | [Tooling choice](organizational/decisions/todo_tooling-choice.md) 🚧 | — | — |
 

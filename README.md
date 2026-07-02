@@ -39,8 +39,7 @@ Describe the problem this project solves, its main features, and any key design 
 ```bash
 git clone https://github.com/your-org/your-repo.git
 cd your-repo
-git config core.hooksPath .githooks   # activate the Git hooks — optional but recommended
-cp .env.example .env                   # then fill in the values
+./setup-project.sh   # activates Git hooks, creates .env from .env.example
 ```
 
 Full setup guide (prerequisites, dependency install, dev server): [docs/product-code/tutorials/getting-started](docs/product-code/tutorials/getting-started.md).

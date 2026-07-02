@@ -50,3 +50,12 @@ Thumbs.db
 tmp/
 temp/
 .cache/
+
+# ── Terraform ────────────────────────────────────────────
+# .terraform.lock.hcl is intentionally NOT ignored — commit it so provider
+# version/checksum selection stays reproducible across machines.
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfvars
+!terraform/*.tfvars.example
