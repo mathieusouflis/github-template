@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars (gitignored) and fill in for the repo you're
+# actually configuring — or let the bootstrap-repo skill generate this file
+# for you from `git remote -v`.
+
+repository_owner = "your-github-username-or-org"
+repository_name  = "your-repo-name"
