@@ -51,6 +51,11 @@ tmp/
 temp/
 .cache/
 
+# ── Nix / direnv / devenv ────────────────────────────────
+.direnv/
+.devenv/
+devenv.local.nix
+
 # ── Terraform ────────────────────────────────────────────
 # .terraform.lock.hcl is intentionally NOT ignored — commit it so provider
 # version/checksum selection stays reproducible across machines.
