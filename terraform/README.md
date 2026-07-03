@@ -35,8 +35,18 @@ variables, without touching the module itself.
 
 ## Running
 
-Always go through the wrapper script, which sources a token from `gh` if
-you're logged in, or prompts for one otherwise:
+Easiest path — `mat repo` (from `bin/mat`) detects the owner/repo from
+`git remote`, writes `terraform/terraform.tfvars`, runs `init`, imports the
+repo into state if it isn't already there, shows the plan, and asks before
+applying:
+
+```bash
+mat repo
+```
+
+Or drive the underlying pieces yourself. `terraform/setup.sh` is the thin
+wrapper that sources a token from `gh` if you're logged in, or prompts for
+one otherwise:
 
 ```bash
 ./terraform/setup.sh init
@@ -47,7 +57,8 @@ you're logged in, or prompts for one otherwise:
 ## One-time import
 
 This repository already exists on GitHub — running `apply` without importing
-it first would try to *create* it and fail. Run this once, before the first
+it first would try to *create* it and fail. `mat repo` handles this
+automatically; doing it manually is a one-time step before the first
 `plan`/`apply`:
 
 ```bash

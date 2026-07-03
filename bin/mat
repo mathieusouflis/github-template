@@ -107,6 +107,77 @@ create_env_file() {
   fi
 }
 
+##### REPOSITORY (terraform) #####
+parse_remote() {
+  # Prints "owner repo" from `git remote get-url origin`, handling both
+  # git@github.com:owner/repo.git and https://github.com/owner/repo.git.
+  local url
+  url="$(git remote get-url origin 2>/dev/null || true)"
+  [ -z "$url" ] && return 1
+  echo "$url" | sed -E 's#^.*[:/]([^/]+)/([^/.]+)(\.git)?$#\1 \2#'
+}
+
+REPO_SLUG=""
+
+repo_init_and_import() {
+  local owner repo
+  read -r owner repo < <(parse_remote) || true
+  if [ -z "${owner:-}" ] || [ -z "${repo:-}" ]; then
+    warn "Couldn't determine owner/repo from 'git remote get-url origin'. Set one and re-run."
+    exit 1
+  fi
+  REPO_SLUG="$owner/$repo"
+
+  info "Configuring GitHub repository: $REPO_SLUG"
+  cat >terraform/terraform.tfvars <<EOF
+repository_owner = "$owner"
+repository_name  = "$repo"
+EOF
+  ok "Wrote terraform/terraform.tfvars"
+
+  ./terraform/setup.sh init
+
+  if ! ./terraform/setup.sh state list 2>/dev/null | grep -qx 'module.github_repository.github_repository.this'; then
+    info "Importing the existing repository into terraform state..."
+    ./terraform/setup.sh import module.github_repository.github_repository.this "$repo"
+  fi
+}
+
+cmd_repo() {
+  # plan/apply: non-interactive, for driving from a script or agent. No
+  # argument: guided flow with an interactive confirm before applying.
+  local action="${1:-guided}"
+
+  if ! command -v terraform >/dev/null 2>&1 || ! command -v gh >/dev/null 2>&1; then
+    warn "terraform and/or gh are missing. Run 'mat setup' first, then re-run this from inside the dev shell."
+    exit 1
+  fi
+
+  case "$action" in
+    plan)
+      repo_init_and_import
+      ./terraform/setup.sh plan
+      ;;
+    apply)
+      repo_init_and_import
+      ./terraform/setup.sh apply
+      ;;
+    guided)
+      repo_init_and_import
+      ./terraform/setup.sh plan
+      if confirm "Apply these changes to $REPO_SLUG now?"; then
+        ./terraform/setup.sh apply
+      else
+        warn "Skipped apply. Re-run 'mat repo' or 'mat repo apply' when ready."
+      fi
+      ;;
+    *)
+      warn "Unknown 'mat repo' action: $action (expected: plan, apply, or no argument)"
+      exit 1
+      ;;
+  esac
+}
+
 ##### SETUP #####
 cmd_setup() {
   local os
@@ -140,12 +211,19 @@ usage() {
 Usage: mat <command>
 
 Commands:
-  setup    Full local onboarding: Nix, direnv, devenv, Git hooks, .env
+  setup           Full local onboarding: Nix, direnv, devenv, Git hooks, .env
+  repo            Configure the GitHub repository via terraform (branch
+                  protection, merge settings, collaborators, environments) —
+                  guided, asks before applying
+  repo plan       Same, but only shows the plan (no prompt, no apply)
+  repo apply      Applies the last plan (no prompt) — for scripted use once
+                  you've already reviewed a 'repo plan'
 EOF
 }
 
 case "${1:-}" in
   setup) cmd_setup ;;
+  repo) cmd_repo "${2:-}" ;;
   help | --help | -h | "") usage ;;
   *)
     warn "Unknown command: $1"
