@@ -98,6 +98,7 @@ resource "github_repository_ruleset" "main" {
 
     pull_request {
       required_approving_review_count   = 0
+      require_last_push_approval = true
       required_review_thread_resolution = true
       allowed_merge_methods             = ["squash", "rebase"] # matches allow_squash_merge/allow_rebase_merge above
     }
