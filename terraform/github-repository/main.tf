@@ -61,9 +61,15 @@ resource "github_repository" "this" {
 # import. Solo-maintainer defaults: a pull request and passing CI are
 # required, but there's no minimum approval count, since GitHub can't let
 # you approve your own PR. Admins aren't blanket-enforced, so you can bypass
-# in a genuine emergency. Nobody — not a collaborator with push access, not
-# a bot — can push directly to main; only repository admins retain that
-# ability by default.
+# in a genuine emergency.
+#
+# No `restrict_pushes` block: GitHub only supports named user/team push
+# restrictions on organization-owned repositories ("Only organization
+# repositories can have users and team restrictions"), and this module
+# targets personal repos. It's not needed to get the same outcome anyway —
+# `required_pull_request_reviews` already blocks direct pushes from anyone
+# without bypass rights, and `enforce_admins = false` is what grants that
+# bypass to admins only.
 resource "github_branch_protection" "main" {
   repository_id = github_repository.this.node_id
   pattern       = "main"
@@ -75,10 +81,6 @@ resource "github_branch_protection" "main" {
 
   required_pull_request_reviews {
     required_approving_review_count = 0
-  }
-
-  restrict_pushes {
-    push_allowances = []
   }
 
   enforce_admins      = false
