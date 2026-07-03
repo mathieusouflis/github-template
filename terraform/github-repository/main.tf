@@ -55,37 +55,64 @@ resource "github_repository" "this" {
   }
 }
 
-##### BRANCH PROTECTION — MAIN #####
+##### BRANCH PROTECTION — DEFAULT BRANCH (ruleset) #####
 #
-# No protection currently exists on main, so this is a clean create, not an
-# import. Solo-maintainer defaults: a pull request and passing CI are
+# Uses the newer Rulesets API (github_repository_ruleset), not the classic
+# github_branch_protection resource — targets `~DEFAULT_BRANCH` so it always
+# follows whichever branch is actually default, rather than a hardcoded
+# "main". Solo-maintainer defaults: a pull request and passing CI are
 # required, but there's no minimum approval count, since GitHub can't let
-# you approve your own PR. Admins aren't blanket-enforced, so you can bypass
-# in a genuine emergency.
-#
-# No `restrict_pushes` block: GitHub only supports named user/team push
-# restrictions on organization-owned repositories ("Only organization
-# repositories can have users and team restrictions"), and this module
-# targets personal repos. It's not needed to get the same outcome anyway —
-# `required_pull_request_reviews` already blocks direct pushes from anyone
-# without bypass rights, and `enforce_admins = false` is what grants that
-# bypass to admins only.
-resource "github_branch_protection" "main" {
-  repository_id = github_repository.this.node_id
-  pattern       = "main"
+# you approve your own PR. Bypass is scoped to the admin repository role
+# (id 5, per the provider's fixed RepositoryRole IDs) so you can act in a
+# genuine emergency without disabling the ruleset.
+resource "github_repository_ruleset" "main" {
+  name        = "default-branch-protection"
+  repository  = github_repository.this.name
+  target      = "branch"
+  enforcement = "active"
 
-  required_status_checks {
-    strict   = true
-    contexts = var.ci_required_status_checks
+  conditions {
+    ref_name {
+      include = ["~DEFAULT_BRANCH"]
+      exclude = []
+    }
   }
 
-  required_pull_request_reviews {
-    required_approving_review_count = 0
+  bypass_actors {
+    actor_type  = "RepositoryRole"
+    actor_id    = 5 # admin
+    bypass_mode = "always"
   }
 
-  enforce_admins      = false
-  allows_deletions    = false
-  allows_force_pushes = false
+  rules {
+    deletion                = true # only bypass actors may delete the default branch
+    non_fast_forward        = true # only bypass actors may force-push
+    required_linear_history = true # redundant with allow_merge_commit=false, but enforced at the git level, including against bypass actors
+
+    # required_signatures and copilot_code_review are deliberately omitted —
+    # neither is documented or expected anywhere else in this repo yet, and
+    # turning them on unilaterally here would surprise a contributor.
+    # required_code_scanning is also omitted: CodeQL default setup isn't
+    # configured on this repo yet (see terraform/README.md), and requiring
+    # code scanning results before they exist would block every merge.
+
+    pull_request {
+      required_approving_review_count   = 0
+      required_review_thread_resolution = true
+      allowed_merge_methods             = ["squash", "rebase"] # matches allow_squash_merge/allow_rebase_merge above
+    }
+
+    required_status_checks {
+      strict_required_status_checks_policy = true
+
+      dynamic "required_check" {
+        for_each = var.ci_required_status_checks
+        content {
+          context = required_check.value
+        }
+      }
+    }
+  }
 }
 
 ##### ENVIRONMENTS #####

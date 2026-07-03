@@ -1,8 +1,9 @@
 # Repository configuration (Terraform)
 
 Manages this repository's GitHub settings as code: merge/auto-merge behavior,
-delete-branch-on-merge, secret scanning, branch protection on `main`, the
-`production`/`staging` deployment environments, and the collaborator list. Uses the
+delete-branch-on-merge, secret scanning, a ruleset protecting the default
+branch, the `production`/`staging` deployment environments, and the
+collaborator list. Uses the
 [`integrations/github`](https://registry.terraform.io/providers/integrations/github/latest/docs)
 provider.
 
@@ -65,10 +66,12 @@ automatically; doing it manually is a one-time step before the first
 ./terraform/setup.sh import module.github_repository.github_repository.this github-template
 ```
 
-Nothing else needs importing: `main` currently has no branch protection
-rule, there are no manually-added collaborators, and neither the
-`production` nor `staging` environment exists yet — all these start as
-clean creates that match the empty/absent live state.
+Nothing else needs importing: no terraform-managed ruleset exists yet on
+the default branch, there are no manually-added collaborators, and neither
+the `production` nor `staging` environment exists yet — all these start as
+clean creates that match the empty/absent live state. (If a classic branch
+protection rule from a prior version of this config still exists, `apply`
+will remove it as part of switching to the ruleset — that's expected.)
 
 ## What's intentionally not managed here
 
