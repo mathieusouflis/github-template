@@ -37,7 +37,7 @@ This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.
    ```bash
    git remote add upstream https://github.com/your-org/your-repo.git
    ```
-4. Run `./setup-project.sh` — activates the Git hooks (validates commit messages locally before you push) and creates `.env` from `.env.example`. See [docs/team-process/how-to/activate-git-hooks](docs/team-process/how-to/activate-git-hooks.md) for what the hooks do.
+4. Run `./bin/mat setup` (native Windows without WSL2: `.\bin\mat.ps1`) — activates the Git hooks (validates commit messages locally before you push), creates `.env` from `.env.example`, and sets up the reproducible dev shell (Nix/direnv/devenv). See [docs/team-process/how-to/activate-git-hooks](docs/team-process/how-to/activate-git-hooks.md) for what the hooks do.
 5. Follow the full setup guide: [docs/product-code/tutorials/getting-started](docs/product-code/tutorials/getting-started.md)
 
 ---

@@ -39,8 +39,10 @@ Describe the problem this project solves, its main features, and any key design 
 ```bash
 git clone https://github.com/your-org/your-repo.git
 cd your-repo
-./setup-project.sh   # activates Git hooks, creates .env from .env.example
+./bin/mat setup   # Git hooks, .env, dev shell (Nix/direnv/devenv), repo config
 ```
+
+On native Windows (no WSL2), run `.\bin\mat.ps1` instead.
 
 Full setup guide (prerequisites, dependency install, dev server): [docs/product-code/tutorials/getting-started](docs/product-code/tutorials/getting-started.md).
 

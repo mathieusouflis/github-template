@@ -42,14 +42,79 @@ ensure_nix() {
 
   warn "Nix is not installed. It's required for the reproducible dev shell (direnv + devenv)."
   if ! confirm "Install Nix now via the Determinate Systems installer?"; then
-    warn "Skipping Nix. Git hooks and .env will still be set up below, but the dev shell (mat/terraform/etc.) won't be available until you install Nix and re-run 'mat setup'."
+    warn "Skipping Nix — falling back to a direct Terraform install instead."
     return 1
   fi
 
   info "Installing Nix (this will prompt for your password)..."
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-  warn "Nix installed. Open a new terminal (or source your shell profile) so the 'nix' command is on PATH, then re-run 'mat setup'."
-  return 1
+  ok "Nix installed."
+  warn "Open a new terminal (or source your shell profile) so the 'nix' command is on PATH, then re-run 'mat setup' to continue."
+  # Nothing further can run in this process (nix isn't on this shell's PATH
+  # yet), and treating this the same as a decline would wrongly trigger the
+  # no-nix fallback right after a successful install. Just stop here.
+  exit 0
+}
+
+##### TERRAFORM (no-nix fallback) #####
+ensure_terraform_direct() {
+  if command -v terraform >/dev/null 2>&1; then
+    ok "Terraform already installed."
+    return 0
+  fi
+
+  if ! confirm "Terraform is not installed. Install it now (direct download, no Nix/sudo required)?"; then
+    warn "Skipping Terraform install. Re-run 'mat setup' once it's available, or install it yourself and run 'mat repo'."
+    return 1
+  fi
+
+  if command -v brew >/dev/null 2>&1; then
+    info "Installing Terraform via Homebrew..."
+    brew install hashicorp/tap/terraform
+    return 0
+  fi
+
+  local os arch
+  case "$(uname -s)" in
+    Darwin) os="darwin" ;;
+    Linux) os="linux" ;;
+    *)
+      warn "No direct-download path for this OS. Install manually: https://developer.hashicorp.com/terraform/install"
+      return 1
+      ;;
+  esac
+  case "$(uname -m)" in
+    x86_64 | amd64) arch="amd64" ;;
+    arm64 | aarch64) arch="arm64" ;;
+    *)
+      warn "No direct-download path for architecture $(uname -m). Install manually: https://developer.hashicorp.com/terraform/install"
+      return 1
+      ;;
+  esac
+
+  # Pinned rather than queried dynamically (no jq/reliable version API without
+  # extra dependencies here) — bump periodically.
+  local version="1.15.7"
+  local install_dir="$HOME/.local/bin"
+  local tmp
+  tmp="$(mktemp -d)"
+
+  info "Downloading Terraform ${version} (${os}/${arch})..."
+  curl -sSfL -o "$tmp/terraform.zip" \
+    "https://releases.hashicorp.com/terraform/${version}/terraform_${version}_${os}_${arch}.zip"
+  mkdir -p "$install_dir"
+  unzip -oq "$tmp/terraform.zip" -d "$install_dir"
+  chmod +x "$install_dir/terraform"
+  rm -rf "$tmp"
+
+  if ! echo ":$PATH:" | grep -q ":$install_dir:"; then
+    warn "Installed to $install_dir, which isn't on PATH yet. Add this to your shell rc, then restart your shell:"
+    echo "     export PATH=\"$install_dir:\$PATH\""
+    export PATH="$install_dir:$PATH"
+    ok "Added it to PATH for the rest of this run."
+  fi
+
+  ok "Terraform installed."
 }
 
 ##### DIRENV #####
@@ -64,8 +129,10 @@ ensure_direnv() {
     nix profile install nixpkgs#direnv
   fi
 
-  local hook_line="eval \"\$(direnv hook $(basename "${SHELL:-bash}"))\""
-  local rc_file="$HOME/.$(basename "${SHELL:-bash}")rc"
+  local shell_name
+  shell_name="$(basename "${SHELL:-bash}")"
+  local hook_line="eval \"\$(direnv hook $shell_name)\""
+  local rc_file="$HOME/.${shell_name}rc"
   if [ -f "$rc_file" ] && grep -qF "direnv hook" "$rc_file"; then
     ok "direnv shell hook already present in $rc_file."
   else
@@ -148,8 +215,10 @@ cmd_repo() {
   # argument: guided flow with an interactive confirm before applying.
   local action="${1:-guided}"
 
-  if ! command -v terraform >/dev/null 2>&1 || ! command -v gh >/dev/null 2>&1; then
-    warn "terraform and/or gh are missing. Run 'mat setup' first, then re-run this from inside the dev shell."
+  # gh is optional — terraform/setup.sh falls back to an interactive token
+  # prompt when it's missing or not logged in.
+  if ! command -v terraform >/dev/null 2>&1; then
+    warn "terraform is missing. Run 'mat setup' first."
     exit 1
   fi
 
@@ -183,7 +252,7 @@ cmd_setup() {
   local os
   os="$(detect_os)"
   if [ "$os" = "unsupported" ]; then
-    warn "Unrecognized OS. Nix/devenv support macOS and Linux (including WSL2) — on native Windows, install WSL2 first and run 'mat setup' from inside it."
+    warn "Unrecognized OS. On native Windows, use bin/mat.ps1 instead (it offers WSL2, or a no-Nix Terraform-only fallback)."
   fi
 
   info "Git hooks and .env (no Nix required for these)"
@@ -197,7 +266,24 @@ cmd_setup() {
     ensure_devenv || true
     if command -v direnv >/dev/null 2>&1; then
       direnv allow "$REPO_ROOT"
-      ok "Ran 'direnv allow' — cd out and back into this directory to enter the dev shell."
+      ok "Ran 'direnv allow'."
+    fi
+
+    echo
+    info "Configuring the GitHub repository (inside the devenv shell)"
+    if command -v devenv >/dev/null 2>&1; then
+      # terraform/gh only exist on PATH inside the devenv shell (declared in
+      # devenv.nix's packages) — a bare 'terraform' call here would fail even
+      # though nix/direnv/devenv are all now installed.
+      devenv shell -- ./bin/mat repo
+    else
+      warn "devenv isn't available — skipping repo config. Re-run 'mat setup' once it is, or run 'mat repo' yourself from inside the dev shell."
+    fi
+  else
+    echo
+    info "Falling back to a direct Terraform install (no reproducible dev shell)"
+    if ensure_terraform_direct; then
+      cmd_repo
     fi
   fi
 
@@ -211,13 +297,18 @@ usage() {
 Usage: mat <command>
 
 Commands:
-  setup           Full local onboarding: Nix, direnv, devenv, Git hooks, .env
+  setup           Full local onboarding: Nix, direnv, devenv, Git hooks, .env,
+                  then configures the GitHub repository via terraform (or a
+                  direct Terraform install if you skip Nix)
   repo            Configure the GitHub repository via terraform (branch
                   protection, merge settings, collaborators, environments) —
                   guided, asks before applying
   repo plan       Same, but only shows the plan (no prompt, no apply)
   repo apply      Applies the last plan (no prompt) — for scripted use once
                   you've already reviewed a 'repo plan'
+
+On native Windows (no WSL2), use bin/mat.ps1 instead — this script requires
+bash.
 EOF
 }
 

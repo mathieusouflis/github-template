@@ -36,14 +36,20 @@ variables, without touching the module itself.
 
 ## Running
 
-Easiest path — `mat repo` (from `bin/mat`) detects the owner/repo from
-`git remote`, writes `terraform/terraform.tfvars`, runs `init`, imports the
-repo into state if it isn't already there, shows the plan, and asks before
-applying:
+`./bin/mat setup` already chains into this automatically on first-time
+onboarding (inside the devenv shell if you have Nix, or via a direct
+Terraform install if you don't — see `bin/mat`'s `cmd_setup`). To (re-)run it
+directly at any other time — `mat repo` (from `bin/mat`, once inside the dev
+shell) detects the owner/repo from `git remote`, writes
+`terraform/terraform.tfvars`, runs `init`, imports the repo into state if it
+isn't already there, shows the plan, and asks before applying:
 
 ```bash
 mat repo
 ```
+
+On native Windows without WSL2, `bin/mat.ps1` reimplements this same flow
+directly in PowerShell (bin/mat itself needs bash).
 
 Or drive the underlying pieces yourself. `terraform/setup.sh` is the thin
 wrapper that sources a token from `gh` if you're logged in, or prompts for

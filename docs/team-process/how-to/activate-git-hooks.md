@@ -11,8 +11,9 @@ This repo ships two shell-based hooks under `.githooks/` — no runtime or depen
 
 ## Steps
 
-Running `./setup-project.sh` from the repository root does this for you, along
-with the rest of local project setup. To activate just the hooks by hand:
+Running `./bin/mat setup` (or `.\bin\mat.ps1` on native Windows) from the
+repository root does this for you, along with the rest of local project
+setup. To activate just the hooks by hand:
 
 ```bash
 git config core.hooksPath .githooks
