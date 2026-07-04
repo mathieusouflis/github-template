@@ -1,3 +1,4 @@
+
 ##### REPOSITORY #####
 #
 # This repository already exists on GitHub, so this resource must be
@@ -8,6 +9,10 @@
 # resource's schema defaults would silently overwrite those fields on the
 # first apply even though they're outside what "configure and secure the
 # repository" means here.
+data "github_repository" "current" {
+  name = var.repository_name
+}
+
 resource "github_repository" "this" {
   name = var.repository_name
 
@@ -19,12 +24,20 @@ resource "github_repository" "this" {
   delete_branch_on_merge = true
 
   ### Security ###
-  security_and_analysis {
-    secret_scanning {
-      status = "enabled"
-    }
-    secret_scanning_push_protection {
-      status = "enabled"
+  #
+  # Secret scanning / push protection require GitHub Advanced Security,
+  # which is free only on public repos and otherwise needs a paid GHAS
+  # license. Only request it when the repo is actually public, so private
+  # repos don't 422 on apply.
+  dynamic "security_and_analysis" {
+    for_each = data.github_repository.current.visibility == "public" ? [1] : []
+    content {
+      secret_scanning {
+        status = "enabled"
+      }
+      secret_scanning_push_protection {
+        status = "enabled"
+      }
     }
   }
 
@@ -98,7 +111,7 @@ resource "github_repository_ruleset" "main" {
 
     pull_request {
       required_approving_review_count   = 0
-      require_last_push_approval = true
+      require_last_push_approval        = true
       required_review_thread_resolution = true
       allowed_merge_methods             = ["squash", "rebase"] # matches allow_squash_merge/allow_rebase_merge above
     }
